@@ -98,7 +98,7 @@ variable "TF_VERSION" {
 }
 
 variable "image_url" {
-  default     = "cos://us-east/rackware-rmm-bucket/RackWareRMMv7.4.0.561.qcow2"
+  default     = "cos://eu-de/sat-diy-test/DIY-Appliance-Gold-Image.qcow2"
   description = "URL for source VSI image used to spin up instance."
 }
 
