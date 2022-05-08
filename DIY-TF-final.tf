@@ -64,7 +64,7 @@ resource "ibm_is_security_group_rule" "ssh_outbound" {
 }
 
 resource "ibm_is_image" "custom_image" {
-  name             = "${var.vpc_name}-Ubuntu-os-20.04"
+  name             = "${var.vpc_name}-Ubuntu-os-20"
   href             = var.image_url
   operating_system = "ubuntu-20-amd64"
   resource_group   = data.ibm_resource_group.rg.id
