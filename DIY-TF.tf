@@ -1,3 +1,13 @@
+terraform {
+  required_providers {
+    ibm = {
+      source = "IBM-Cloud/ibm"
+      version = "~> 1.38.2"
+    }
+  }
+  required_version = ">= 0.13" 
+}
+
 provider "ibm" {
   ibmcloud_api_key = var.ibmcloud_api_key
   region           = var.ibm_region
@@ -73,7 +83,6 @@ resource "ibm_is_instance" "vsi" {
   image          = ibm_is_image.custom_image.id
   profile        = var.profile
 
-  user_data = file("download_discovery.sh")
   primary_network_interface {
     subnet          = data.ibm_is_subnet.subnet.id
     security_groups = [ibm_is_security_group.sg.id]
@@ -81,7 +90,7 @@ resource "ibm_is_instance" "vsi" {
 }
 
 resource "ibm_is_floating_ip" "fip" {
-  count          = var.is_create_fip ? 1 : 0
+  count          = var.create_floating_ip ? 1 : 0
   name           = "${var.vpc_name}-fip"
   target         = ibm_is_instance.vsi.primary_network_interface[0].id
   resource_group = data.ibm_resource_group.rg.id
@@ -89,16 +98,16 @@ resource "ibm_is_floating_ip" "fip" {
 
 output "PUBLIC_IP" {
   description = "Public ip address of RMM server."
-  value       = var.is_create_fip ? ibm_is_floating_ip.fip[0].address : "Public IP address is not created."
+  value       = var.create_floating_ip ? ibm_is_floating_ip.fip[0].address : "Public IP address is not created."
 }
 
 variable "TF_VERSION" {
-  default     = "0.15"
+  default     = "0.13"
   description = "Terraform engine version to be used in schematics"
 }
 
 variable "image_url" {
-  default     = "cos://eu-de/sat-diy-test/DIY-Appliance-Gold-Image.qcow2"
+  default     = "cos://us-east/rackware-rmm-bucket/RackWareRMMv7.4.0.561.qcow2"
   description = "URL for source VSI image used to spin up instance."
 }
 
@@ -141,7 +150,7 @@ variable "subnet_name" {
   type        = string
 }
 
-variable "is_create_fip" {
+variable "create_floating_ip" {
   description = "Do you want to create and associate floating IP address?"
   type        = bool
   default     = false
